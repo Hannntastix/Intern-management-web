@@ -1,0 +1,20 @@
+/* print.css */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-container, 
+  .print-container * {
+    visibility: visible;
+  }
+  .print-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}

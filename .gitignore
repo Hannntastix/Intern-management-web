@@ -42,3 +42,6 @@ next-env.d.ts
 
 # Firebase service account key (jangan pernah di-push)
 serviceAccountKey.json
+
+#JSON Admin (Testing Purposes)
+admin.json

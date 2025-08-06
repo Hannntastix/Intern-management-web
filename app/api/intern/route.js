@@ -1,6 +1,7 @@
-import Intern from "./../../../models/internInfo";
-import connectMongoDB from "./../../../libs/mongodb";
+import Intern from "@/models/internInfo";
+import connectMongoDB from "@/lib/mongodb";
 import { NextResponse } from "next/server";
+import User from "../../../models/User";
 
 export async function GET(request) {
     try {
@@ -8,23 +9,39 @@ export async function GET(request) {
 
         const { searchParams } = new URL(request.url);
         const month = searchParams.get("month");
+        const userId = searchParams.get("userId");
+        const email = searchParams.get("email");
 
-        if (!month) {
-            const interns = await Intern.find().populate('pembimbing', 'nama');
+        // Jika ada userId, cari berdasarkan userId
+        if (userId) {
+            const intern = await Intern.findOne({ userId }).populate('pembimbing', 'nama');
+            return NextResponse.json({ interns: intern ? [intern] : [] });
+        }
+
+        // Jika ada email, cari berdasarkan email
+        if (email) {
+            const intern = await Intern.findOne({ email }).populate('pembimbing', 'nama');
+            return NextResponse.json({ interns: intern ? [intern] : [] });
+        }
+
+        // Logic bulan tetap sama
+        if (month) {
+            const [year, mon] = month.split("-").map(Number);
+            const startOfMonth = new Date(year, mon - 1, 1);
+            const endOfMonth = new Date(year, mon, 0, 23, 59, 59, 999);
+
+            const interns = await Intern.find({
+                tanggalMulai: { $lte: endOfMonth },
+                tanggalSelesai: { $gte: startOfMonth },
+            })
+                .populate('pembimbing')
+                .sort({ nama: 1 });
+
             return NextResponse.json({ interns });
         }
 
-        const [year, mon] = month.split("-").map(Number);
-        const startOfMonth = new Date(year, mon - 1, 1);
-        const endOfMonth = new Date(year, mon, 0, 23, 59, 59, 999);
-
-        const interns = await Intern.find({
-            tanggalMulai: { $lte: endOfMonth },
-            tanggalSelesai: { $gte: startOfMonth },
-        })
-            .populate('pembimbing')
-            .sort({ nama: 1 });
-
+        // Default: return semua interns
+        const interns = await Intern.find().populate('pembimbing', 'nama');
         return NextResponse.json({ interns });
     } catch (error) {
         console.error("GET Error:", error);
@@ -39,7 +56,6 @@ export async function POST(request) {
     try {
         const body = await request.json();
 
-        console.log("Received data:", body);
 
         const {
             nama, nim, nik, prodi, kampus,
@@ -106,11 +122,9 @@ export async function POST(request) {
             createdAt: createdAt ? new Date(createdAt) : new Date()
         };
 
-        console.log("Creating intern with data:", internData);
 
         const newIntern = await Intern.create(internData);
 
-        console.log("Intern created successfully:", newIntern);
 
         return NextResponse.json(
             {

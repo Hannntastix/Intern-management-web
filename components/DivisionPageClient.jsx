@@ -8,12 +8,30 @@ import NavbarGeneral from '@/components/NavbarGeneral';
 import NotFound from '../app/notFound/page';
 import { useRouter } from 'next/navigation';
 
-export default function DivisionPageClient({ interns }) {
+export default function DivisionPageClient() {
     const [user, setUser] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [interns, setInterns] = useState([]);
 
     const route = useRouter();
+
+    // Fetch interns data
+    useEffect(() => {
+        const fetchInterns = async () => {
+            try {
+                const res = await fetch('/api/intern');
+                if (!res.ok) throw new Error('Gagal mengambil data intern');
+                const data = await res.json();
+                setInterns(data.interns || []);
+            } catch (error) {
+                console.error('Error fetching interns:', error);
+                setInterns([]);
+            }
+        };
+
+        fetchInterns();
+    }, []);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {

@@ -22,8 +22,17 @@ export default function InternDataManagement({
     const [newNim, setNewNim] = useState(nim);
     const [newProdi, setNewProdi] = useState(prodi);
     const [newKampus, setNewKampus] = useState(kampus);
-    const [newTanggalMulai, setNewTanggalMulai] = useState(tanggalMulai);
-    const [newTanggalSelesai, setNewTanggalSelesai] = useState(tanggalSelesai);
+    
+    // Format tanggal ke YYYY-MM-DD untuk input type="date"
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return ''; // Invalid date
+        return date.toISOString().split('T')[0];
+    };
+    
+    const [newTanggalMulai, setNewTanggalMulai] = useState(formatDate(tanggalMulai));
+    const [newTanggalSelesai, setNewTanggalSelesai] = useState(formatDate(tanggalSelesai));
     const [newStatus, setNewStatus] = useState(status);
     const [interns, setInterns] = useState([]);
     const [error, setError] = useState(null);

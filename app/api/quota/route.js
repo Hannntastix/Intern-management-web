@@ -1,6 +1,6 @@
 // pages/api/kuota.js
 import Kuota from '@/models/kuota'; // Pastikan path model Kuota benar // Asumsi Anda punya file koneksi DB
-import connectMongoDB from '@/libs/mongodb';
+import connectMongoDB from '@/lib/mongodb';
 
 export default async function handler(req, res) {
     if (req.method !== 'PUT') { // GANTI DI SINI

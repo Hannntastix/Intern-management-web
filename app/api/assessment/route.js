@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import Assessment from "@/models/internAssesment";
-import connectMongoDB from "@/libs/mongodb";
+import connectMongoDB from "@/lib/mongodb";
 
 export async function POST(req) {
     await connectMongoDB();
